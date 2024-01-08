@@ -1,22 +1,23 @@
 import whisper
+import os
 
 from prompts import DEFAULT_DOCUMENT_PROMPT
 from langchain.schema import format_document
 
 
-def load_whisper_model():
+def load_whisper_model() -> whisper.Whisper:
     model = whisper.load_model("tiny")
     print("Model loaded!")
     return model
 
 
-def transcribe_audio(model, filepath):
+def transcribe_audio(model, filepath) -> str:
     result = model.transcribe(filepath)
     print("Transcription done!", end="\n\n")
     return result['text']
 
 
-def chunk_text(text, chunk_size=500):
+def chunk_text(text, chunk_size=500) -> list[str]:
     snippets = []
     start = 0
     end = chunk_size
@@ -28,7 +29,11 @@ def chunk_text(text, chunk_size=500):
     return snippets
 
 
-def combine_documents(docs, document_prompt=DEFAULT_DOCUMENT_PROMPT, document_separator="\n\n"):
+def combine_documents(docs, document_prompt=DEFAULT_DOCUMENT_PROMPT, document_separator="\n\n") -> str:
     doc_strings = [format_document(doc, document_prompt) for doc in docs]
     return document_separator.join(doc_strings)
 
+def create_asset_dir() -> None:
+    if not os.path.exists("assets"):
+        os.makedirs("assets")
+        os.makedirs("assets/vector_store")

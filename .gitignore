@@ -1,21 +1,19 @@
-# Conda environment
 .env/
 .conda/
 
 .env
 
-# Compiled Python files
 *.pyc
 __pycache__/
 
-# Logs
 *.log
 
-# Conda environment YAML file
 environment.yml
 
-# Conda lock file
 conda.lock
 
-# Conda package cache
 pkgs/
+
+assets/
+
+.vscode

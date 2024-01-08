@@ -12,8 +12,8 @@ from colorama import init
 from termcolor import cprint
 from pyfiglet import figlet_format
 
-from utils import combine_documents, load_whisper_model, transcribe_audio, chunk_text
-from vector_store import create_vector_store
+from utils import clean_answer, combine_documents, create_asset_dir, load_whisper_model, transcribe_audio, chunk_text
+from vector_store import create_vector_store, does_vector_store_exist, load_vector_store, save_vector_store
 from memory import create_memory
 from prompts import CONDENSE_QUESTION_PROMPT, ANSWER_PROMPT
 
@@ -30,17 +30,28 @@ parser.add_argument('-f', '--filepath', type=str,
 
 args = parser.parse_args()
 
+create_asset_dir()
+
 def chat_with_speech(filepath):
     cprint(figlet_format('Speech GPT', font='starwars'), attrs=['bold'])
 
     if os.path.isfile(filepath) == False:
         print("File does not exist!")
         return
+    
+    file_name = os.path.basename(filepath)
 
     model = load_whisper_model()
-    transcribed_text = transcribe_audio(model, filepath)
-    text_chunks = chunk_text(transcribed_text)
-    vector_store = create_vector_store(text_chunks)
+    
+    if does_vector_store_exist(file_name):
+        print("Loading vector store...")
+        vector_store = load_vector_store(file_name)
+    else:
+        transcribed_text = transcribe_audio(model, filepath)
+        text_chunks = chunk_text(transcribed_text)
+        vector_store = create_vector_store(text_chunks)
+        save_vector_store(vector_store, file_name)
+
     memory = create_memory()
 
     loaded_memory = RunnablePassthrough.assign(
@@ -59,7 +70,10 @@ def chat_with_speech(filepath):
     }
 
     retrieved_documents = {
-        "docs": itemgetter("standalone_question") | vector_store,
+        "docs": itemgetter("standalone_question") | vector_store.as_retriever(
+            search_type="similarity_score_threshold", 
+            search_kwargs={"score_threshold": 0.5, "k": 5 }
+        ),
         "question": lambda x: x["standalone_question"],
     }
 
@@ -78,12 +92,15 @@ def chat_with_speech(filepath):
     while True:
         print("\n>>> ", end="")
         question = input()
-        if question == "exit":  break
+        if question == "exit":  
+            print("Bye!")
+            break
         spinner = Halo(text='Thinking...', spinner='dots')
         spinner.start()
         result = final_chain.invoke({"question": question})
         spinner.stop()
-        print("\nAnswer: {}".format(result["answer"]))
+        print('\nSpeech GPT: ', end='\n')
+        print(result["answer"].content)
         memory.save_context({"question": question}, {
                             "answer": result["answer"].content})
 
