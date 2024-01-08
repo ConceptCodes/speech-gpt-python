@@ -12,7 +12,7 @@ from colorama import init
 from termcolor import cprint
 from pyfiglet import figlet_format
 
-from utils import clean_answer, combine_documents, create_asset_dir, load_whisper_model, transcribe_audio, chunk_text
+from utils import combine_documents, create_asset_dir, load_whisper_model, transcribe_audio, chunk_text
 from vector_store import create_vector_store, does_vector_store_exist, load_vector_store, save_vector_store
 from memory import create_memory
 from prompts import CONDENSE_QUESTION_PROMPT, ANSWER_PROMPT
@@ -105,4 +105,5 @@ def chat_with_speech(filepath):
                             "answer": result["answer"].content})
 
 
-chat_with_speech(args.filepath)
+if __name__ == "__main__":
+    chat_with_speech(args.filepath)
