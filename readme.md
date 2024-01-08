@@ -73,15 +73,20 @@ Model loaded!
   warnings.warn("FP16 is not supported on CPU; using FP32 instead")
 Transcription done!
 
+Creating vector store...
+Saving vector store...
 
->>> give me a summary
+>>> Whats the theme of this talk?
 
-Answer: The context provided is very unclear and contains a lot of unrelated information and slang. It appears to be discussing Einstein's theory of special relativity, specifically the concept of relative motion and the idea that time can be affected by speed. However, it is difficult to provide a clear and concise summary based on the given context.
+Speech GPT: 
+The theme of this conversation appears to be functional programming and the use of types in designing functions.
+
+>>> 
 ```
 
 ## Roadmap
 
 - [ ] Store embeddings in local postgres DB
-- [ ] Add a cache for files
+- [x] Add a cache for files
 - [ ] clean up the CLI
 - [ ] Add timestamp sources to the response
