@@ -78,9 +78,8 @@ def chat_with_speech(filepath):
     while True:
         print("\n>>> ", end="")
         question = input()
-        if question == "exit":
-            break
-        spinner = Halo(text='\nThinking...', spinner='dots')
+        if question == "exit":  break
+        spinner = Halo(text='Thinking...', spinner='dots')
         spinner.start()
         result = final_chain.invoke({"question": question})
         spinner.stop()
