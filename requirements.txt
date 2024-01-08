@@ -1,0 +1,9 @@
+langchain
+whisper
+pyfiglet
+termcolor
+colorama
+openai 
+faiss-cpu
+tiktoken
+spinners
