@@ -7,21 +7,16 @@ from prompts import DEFAULT_DOCUMENT_PROMPT
 from langchain.schema import format_document
 from youtube_transcript_api import YouTubeTranscriptApi
 
-
 def load_whisper_model() -> whisper.Whisper:
-    model = whisper.load_model("tiny")
+    model = whisper.load_model("base")
     print("Model loaded!")
     return model
 
-
+@Halo(text='Transcribing Audio...', spinner='dots')
 def transcribe_audio(model, filepath) -> str:
-    spinner = Halo(text='Thinking...', spinner='dots')
-    spinner.start()
     result = model.transcribe(filepath)
-    spinner.stop()
     print("Transcription done!", end="\n\n")
     return result['text']
-
 
 def chunk_text(text, chunk_size=500) -> list[str]:
     snippets = []
@@ -33,7 +28,6 @@ def chunk_text(text, chunk_size=500) -> list[str]:
         start = end
         end += chunk_size
     return snippets
-
 
 def combine_documents(docs, document_prompt=DEFAULT_DOCUMENT_PROMPT, document_separator="\n\n") -> str:
     doc_strings = [format_document(doc, document_prompt) for doc in docs]

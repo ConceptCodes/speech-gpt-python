@@ -37,7 +37,7 @@ create_asset_dir()
 def chat_with_speech(file_path):
     cprint(figlet_format('Speech GPT', font='starwars'), attrs=['bold'])
 
-    if file_path != None and os.path.isfile(file_path) == False and args.youtube == None:
+    if file_path is None and not os.path.isfile(file_path) and args.youtube is None:
         print("File does not exist!")
         return 
     
@@ -52,7 +52,7 @@ def chat_with_speech(file_path):
     else:
         if not args.youtube:
             model = load_whisper_model()
-            transcribed_text = transcribe_audio(model, filepath)
+            transcribed_text = transcribe_audio(model, file_path)
         else:
             transcribed_text = download_youtube_transcript(video_id)
         text_chunks = chunk_text(transcribed_text)
