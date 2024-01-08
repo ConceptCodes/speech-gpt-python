@@ -30,12 +30,8 @@ parser.add_argument('-f', '--filepath', type=str,
 
 args = parser.parse_args()
 
-API_KEY = "YOUR_API_KEY"
-
-
 def chat_with_speech(filepath):
     cprint(figlet_format('Speech GPT', font='starwars'), attrs=['bold'])
-    """Transcribes audio, prepares documents, and interacts with the chatbot."""
 
     if os.path.isfile(filepath) == False:
         print("File does not exist!")
@@ -44,7 +40,7 @@ def chat_with_speech(filepath):
     model = load_whisper_model()
     transcribed_text = transcribe_audio(model, filepath)
     text_chunks = chunk_text(transcribed_text)
-    vector_store = create_vector_store(text_chunks, API_KEY)
+    vector_store = create_vector_store(text_chunks)
     memory = create_memory()
 
     loaded_memory = RunnablePassthrough.assign(
@@ -58,7 +54,7 @@ def chat_with_speech(filepath):
             "chat_history": lambda x: get_buffer_string(x["chat_history"]),
         }
         | CONDENSE_QUESTION_PROMPT
-        | ChatOpenAI(temperature=0, api_key=API_KEY)
+        | ChatOpenAI(temperature=0)
         | StrOutputParser(),
     }
 
@@ -73,7 +69,7 @@ def chat_with_speech(filepath):
     }
 
     answer = {
-        "answer": final_inputs | ANSWER_PROMPT | ChatOpenAI(api_key=API_KEY),
+        "answer": final_inputs | ANSWER_PROMPT | ChatOpenAI(),
         "docs": itemgetter("docs"),
     }
 
