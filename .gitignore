@@ -2,6 +2,8 @@
 .env/
 .conda/
 
+.env
+
 # Compiled Python files
 *.pyc
 __pycache__/
