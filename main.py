@@ -12,7 +12,7 @@ from colorama import init
 from termcolor import cprint
 from pyfiglet import figlet_format
 
-from utils import combine_documents, create_asset_dir, load_whisper_model, transcribe_audio, chunk_text
+from utils import combine_documents, create_asset_dir, download_youtube_transcript, extract_video_id, load_whisper_model, transcribe_audio, chunk_text
 from vector_store import create_vector_store, does_vector_store_exist, load_vector_store, save_vector_store
 from memory import create_memory
 from prompts import CONDENSE_QUESTION_PROMPT, ANSWER_PROMPT
@@ -26,28 +26,35 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument('-f', '--filepath', type=str,
-                    help='Path to audio file', required=True)
+                    help='Path to audio file')
+
+parser.add_argument('-y', '--youtube', type=str, help='YouTube URL')
 
 args = parser.parse_args()
 
 create_asset_dir()
 
-def chat_with_speech(filepath):
+def chat_with_speech(file_path):
     cprint(figlet_format('Speech GPT', font='starwars'), attrs=['bold'])
 
-    if os.path.isfile(filepath) == False:
+    if file_path != None and os.path.isfile(file_path) == False and args.youtube == None:
         print("File does not exist!")
-        return
+        return 
     
-    file_name = os.path.basename(filepath)
-
-    model = load_whisper_model()
+    if args.youtube != None:
+        video_id = extract_video_id(args.youtube)
+        
+    file_name = os.path.basename(file_path or f"{video_id}.txt")
     
     if does_vector_store_exist(file_name):
         print("Loading vector store...")
         vector_store = load_vector_store(file_name)
     else:
-        transcribed_text = transcribe_audio(model, filepath)
+        if not args.youtube:
+            model = load_whisper_model()
+            transcribed_text = transcribe_audio(model, filepath)
+        else:
+            transcribed_text = download_youtube_transcript(video_id)
         text_chunks = chunk_text(transcribed_text)
         vector_store = create_vector_store(text_chunks)
         save_vector_store(vector_store, file_name)

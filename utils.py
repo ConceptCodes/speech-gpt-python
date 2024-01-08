@@ -1,9 +1,11 @@
 import whisper
 import os
+import re
 
 from halo import Halo
 from prompts import DEFAULT_DOCUMENT_PROMPT
 from langchain.schema import format_document
+from youtube_transcript_api import YouTubeTranscriptApi
 
 
 def load_whisper_model() -> whisper.Whisper:
@@ -41,3 +43,16 @@ def create_asset_dir() -> None:
     if not os.path.exists("assets"):
         os.makedirs("assets")
         os.makedirs("assets/vector_store")
+
+def extract_video_id(url):
+    regex = re.compile(r'(?:https?://)?(?:www\.)?(?:youtube\.com|youtu\.be)/(?:watch\?v=)?(.+)')
+    match = regex.match(url)
+    
+    if not match:
+        raise ValueError("Invalid YouTube URL")
+    
+    return match.group(1)
+
+def download_youtube_transcript(video_id) -> str:
+    script = YouTubeTranscriptApi.get_transcript(video_id)
+    return "\n".join([s['text'] for s in script])
