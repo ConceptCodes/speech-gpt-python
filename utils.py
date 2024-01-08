@@ -1,6 +1,7 @@
 import whisper
 import os
 
+from halo import Halo
 from prompts import DEFAULT_DOCUMENT_PROMPT
 from langchain.schema import format_document
 
@@ -12,7 +13,10 @@ def load_whisper_model() -> whisper.Whisper:
 
 
 def transcribe_audio(model, filepath) -> str:
+    spinner = Halo(text='Thinking...', spinner='dots')
+    spinner.start()
     result = model.transcribe(filepath)
+    spinner.stop()
     print("Transcription done!", end="\n\n")
     return result['text']
 
