@@ -44,6 +44,22 @@ A simple command-line tool that allows you to chat with your speeches.
    export OPENAI_API_KEY=<your-api-key>
    ```
 
+## M1 Support
+[Docs](https://github.com/ggerganov/whisper.cpp?tab=readme-ov-file#core-ml-support)
+
+```sh
+./whisper.cpp/models/generate-coreml-model.sh base.en
+```   
+
+```sh
+# using Makefile
+make clean
+WHISPER_COREML=1 make -j
+
+# using CMake
+cmake -B build -DWHISPER_COREML=1
+cmake --build build -j --config Release
+```
 
 ## Usage
 
@@ -88,5 +104,5 @@ The theme of this conversation appears to be functional programming and the use 
 
 - [ ] Store embeddings in local postgres DB
 - [x] Add a cache for files
-- [ ] clean up the CLI
+- [ ] Clean up the CLI
 - [ ] Add timestamp sources to the response

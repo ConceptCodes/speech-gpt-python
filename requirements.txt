@@ -7,3 +7,7 @@ openai
 faiss-cpu
 tiktoken
 spinners
+youtube-transcript-api
+ane_transformers
+openai-whisper
+coremltools
